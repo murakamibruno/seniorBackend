@@ -1,13 +1,17 @@
 package senior.com.example.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.querydsl.core.annotations.Config;
+import com.querydsl.core.annotations.QueryInit;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.UUID;
 
+@Config(entityAccessors=true)
 @Entity
 @Table(name="prodservico")
 public class ProdServico {

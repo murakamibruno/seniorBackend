@@ -1,23 +1,29 @@
 package senior.com.example.controllers;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
 import senior.com.example.models.ProdServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import senior.com.example.models.QProdServico;
 import senior.com.example.repositories.ProdServicoRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/prodservicos")
 public class ProdServicoController {
     private Pageable pageSize = PageRequest.ofSize(10);
     private ProdServicoRepository prodServicoRepository;
+    private QProdServico qProdServico = QProdServico.prodServico;
 
     @Autowired
     public ProdServicoController(ProdServicoRepository prodServicoRepository) {
@@ -44,6 +50,23 @@ public class ProdServicoController {
         List<ProdServico> prodServico = prodServicoRepository.findByItensPedidoId(id);
         return prodServico;
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/filter")
+    @ResponseBody
+    public Iterable<ProdServico> search(@RequestParam(value = "search") String search) {
+        ProdServicoPredicateBuilder builder = new ProdServicoPredicateBuilder();
+
+        if (search != null) {
+            Pattern pattern = Pattern.compile("(\\w.+?)(:|<|>)((\\w+?\\-?)*),");
+            Matcher matcher = pattern.matcher(search + ",");
+            while (matcher.find()) {
+                builder.with(matcher.group(1), matcher.group(2), matcher.group(3));
+            }
+        }
+        BooleanExpression exp = builder.build();
+        return prodServicoRepository.findAll(exp);
+    }
+
 
     @PostMapping
     public ResponseEntity<ProdServico> saveProdServico(@RequestBody ProdServico prodServico) {
