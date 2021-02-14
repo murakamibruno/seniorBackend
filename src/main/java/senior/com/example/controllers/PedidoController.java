@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import senior.com.example.criteria.predicates.PedidoPredicateBuilder;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
+import senior.com.example.exception.PedidoNotFound;
 import senior.com.example.models.Pedido;
 import senior.com.example.models.ProdServico;
 import senior.com.example.repositories.PedidoRepository;
@@ -47,7 +48,7 @@ public class PedidoController {
         if(pedido.isPresent()) {
             return new ResponseEntity<Pedido>(pedido.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new PedidoNotFound(id);
         }
     }
 
@@ -80,7 +81,7 @@ public class PedidoController {
             Pedido pedidoUpdated = pedidoRepository.save(pedido);
             return new ResponseEntity<Pedido>(pedidoUpdated, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new PedidoNotFound(id);
         }
     }
 
@@ -92,7 +93,7 @@ public class PedidoController {
             Pedido pedidoUpdated = pedidoRepository.save(pedido);
             return new ResponseEntity<Pedido>(pedidoUpdated, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new PedidoNotFound(id);
         }
     }
 
@@ -111,7 +112,7 @@ public class PedidoController {
             pedidoRepository.delete(pedidoDeleted);
             return new ResponseEntity<Pedido>(pedidoDeleted, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new PedidoNotFound(id);
         }
     }
 }

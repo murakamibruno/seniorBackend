@@ -4,18 +4,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
-import senior.com.example.models.Pedido;
+import senior.com.example.exception.ProdServicoNotFound;
 import senior.com.example.models.ProdServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import senior.com.example.models.QProdServico;
 import senior.com.example.repositories.PedidoRepository;
 import senior.com.example.repositories.ProdServicoRepository;
-import senior.com.example.services.PedidoService;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -46,7 +43,7 @@ public class ProdServicoController {
         if(prodServico.isPresent()) {
             return new ResponseEntity<ProdServico>(prodServico.get(),HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ProdServicoNotFound(id);
         }
     }
 
@@ -80,7 +77,7 @@ public class ProdServicoController {
             ProdServico prodServicoUpdated = prodServicoRepository.save(prodServico);
             return new ResponseEntity<ProdServico>(prodServicoUpdated, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ProdServicoNotFound(id);
         }
     }
 
@@ -93,7 +90,7 @@ public class ProdServicoController {
             prodServicoRepository.delete(prodServicoDeleted);
             return new ResponseEntity<ProdServico>(prodServicoDeleted, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ProdServicoNotFound(id);
         }
     }
 }

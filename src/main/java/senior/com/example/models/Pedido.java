@@ -5,6 +5,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,8 @@ public class Pedido {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pedido", fetch = FetchType.LAZY)
     private List<ProdServico> prodServicos;
 
+    @NotNull(message = "valor não pode ser nulo")
+    @Positive(message = "Valor deve ser maior que 0")
     private float precoPedido;
 
     @JsonManagedReference

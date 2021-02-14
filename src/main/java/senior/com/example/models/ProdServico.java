@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.querydsl.core.annotations.Config;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Currency;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.UUID;
 
 @Entity
@@ -27,7 +26,6 @@ public class ProdServico {
     private String nome;
 
     @Positive(message = "Valor não pode ser 0 ou negativo")
-    @NotNull(message = "Preço não pode ser nulo")
     @Column(name = "preco", nullable = false)
     private float preco;
 
