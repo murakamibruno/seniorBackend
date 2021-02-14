@@ -1,9 +1,11 @@
 package senior.com.example.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,18 +17,26 @@ public class Pedido {
     @Type(type="pg-uuid")
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.MERGE)
-    private ItensPedido itensPedido;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pedido", fetch = FetchType.LAZY)
+    private List<ProdServico> prodServicos;
 
     private float precoPedido;
+
+    @JsonManagedReference
+    public List<ProdServico> getProdServicos() {
+        return prodServicos;
+    }
+
+    public void setProdServicos(List<ProdServico> prodServicos) {
+        this.prodServicos = prodServicos;
+    }
 
     public Pedido() {
 
     }
 
-    public Pedido(UUID id, ItensPedido itensPedido, float precoPedido) {
+    public Pedido(UUID id, float precoPedido) {
         this.id = id;
-        this.itensPedido = itensPedido;
         this.precoPedido = precoPedido;
     }
 
@@ -36,14 +46,6 @@ public class Pedido {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public ItensPedido getItensPedido() {
-        return itensPedido;
-    }
-
-    public void setItensPedido(ItensPedido itensPedido) {
-        this.itensPedido = itensPedido;
     }
 
     public float getPrecoPedido() {

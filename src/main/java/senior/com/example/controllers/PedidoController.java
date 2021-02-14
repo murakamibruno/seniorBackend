@@ -25,18 +25,16 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/pedido")
 public class PedidoController {
     private Pageable pageSize = PageRequest.ofSize(10);
+
+    @Autowired
     private PedidoRepository pedidoRepository;
+
+    @Autowired
     private ProdServicoRepository prodServicoRepository;
 
     private float discountSumValue = 0.0F;
 
     PedidoService pedidoService = new PedidoService();
-
-    @Autowired
-    public void setPedidoRepository(PedidoRepository pedidoRepository, ProdServicoRepository prodServicoRepository) {
-        this.pedidoRepository = pedidoRepository;
-        this.prodServicoRepository = prodServicoRepository;
-    }
 
     @GetMapping
     public Iterable<Pedido> getAllPedidos() {
@@ -53,9 +51,9 @@ public class PedidoController {
         }
     }
 
-    @GetMapping("/{id}/produto-servico")
+    @GetMapping("/{id}/listarProdutos")
     public Iterable<ProdServico> getProdServicoByPedidoId(@PathVariable(value = "id") UUID id) {
-        List<ProdServico> prodServico = pedidoRepository.findProdServicoById(id);
+        List<ProdServico> prodServico = prodServicoRepository.findByPedidoId(id);
         return prodServico;
     }
 

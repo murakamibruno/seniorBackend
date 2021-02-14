@@ -12,8 +12,8 @@ public class PedidoService {
     private float discountSumValue = 0.0F;
 
     public float getSumPrice(Pedido pedido, ProdServicoRepository prodServicoRepository) {
-        UUID uuid = pedido.getItensPedido().getId();
-        List<ProdServico> prodServicoList = prodServicoRepository.findByItensPedidoId(uuid);
+        UUID uuid = pedido.getId();
+        List<ProdServico> prodServicoList = prodServicoRepository.findByPedidoId(uuid);
         prodServicoList.forEach(prodServico -> {
             sumPrice += prodServico.getPreco();
         });
@@ -21,9 +21,9 @@ public class PedidoService {
     }
 
     public float getSumDiscountValue(Pedido pedido, int desconto, ProdServicoRepository prodServicoRepository) {
-        UUID uuid = pedido.getItensPedido().getId();
+        UUID uuid = pedido.getId();
         double discount = Double.valueOf(desconto)/100;
-        List<ProdServico> prodServicoList = prodServicoRepository.findByItensPedidoId(uuid);
+        List<ProdServico> prodServicoList = prodServicoRepository.findByPedidoId(uuid);
         prodServicoList.forEach(prodServico -> {
             if(prodServico.getIsProduto()) {
                 discountSumValue += prodServico.getPreco() * discount;

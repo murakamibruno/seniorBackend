@@ -2,16 +2,15 @@ package senior.com.example.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.querydsl.core.annotations.Config;
-import com.querydsl.core.annotations.QueryInit;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
-@Config(entityAccessors=true)
 @Entity
 @Table(name="prodservico")
 public class ProdServico {
@@ -22,42 +21,47 @@ public class ProdServico {
     @Type(type="pg-uuid")
     private UUID id;
 
+    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 a 100 caracteres")
+    @NotNull(message = "Nome não pode ser nulo")
     @Column(name = "nome", nullable = false)
     private String nome;
 
+    @Positive(message = "Valor não pode ser 0 ou negativo")
+    @NotNull(message = "Preço não pode ser nulo")
     @Column(name = "preco", nullable = false)
     private float preco;
 
+    @NotNull
     @Column(name = "isProduto", nullable = false)
     private boolean isProduto;
 
+    @NotNull
     @Column(name= "isAtivo", nullable = false, columnDefinition = "boolean default true")
     private boolean isAtivo;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name="itens_pedido_id")
-    private ItensPedido itensPedido;
+    @JoinColumn(name="pedido_id")
+    private Pedido pedido;
 
     @JsonBackReference
-    public ItensPedido getItensPedido() {
-        return itensPedido;
+    public Pedido getPedido() {
+        return pedido;
     }
 
-    public void setItensPedido(ItensPedido itensPedido) {
-        this.itensPedido = itensPedido;
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
-
 
     public ProdServico() {
         super();
     }
 
-    public ProdServico(String nome, float preco, boolean isProduto, boolean isAtivo, ItensPedido itensPedido) {
+    public ProdServico(String nome, float preco, boolean isProduto, boolean isAtivo, Pedido pedido) {
         this.nome = nome;
         this.preco = preco;
         this.isProduto = isProduto;
         this.isAtivo = isAtivo;
-        this.itensPedido = itensPedido;
+        this.pedido = pedido;
     }
 
     public UUID getId() {

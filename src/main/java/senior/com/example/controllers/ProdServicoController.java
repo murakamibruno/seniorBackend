@@ -4,13 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
+import senior.com.example.models.Pedido;
 import senior.com.example.models.ProdServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import senior.com.example.models.QProdServico;
+import senior.com.example.repositories.PedidoRepository;
 import senior.com.example.repositories.ProdServicoRepository;
+import senior.com.example.services.PedidoService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +26,13 @@ import java.util.regex.Pattern;
 public class ProdServicoController {
     private Pageable pageSize = PageRequest.ofSize(10);
     private ProdServicoRepository prodServicoRepository;
-    private QProdServico qProdServico = QProdServico.prodServico;
+    private PedidoRepository pedidoRepository;
+
 
     @Autowired
-    public ProdServicoController(ProdServicoRepository prodServicoRepository) {
+    public ProdServicoController(ProdServicoRepository prodServicoRepository, PedidoRepository pedidoRepository) {
         this.prodServicoRepository = prodServicoRepository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     @GetMapping
@@ -43,12 +48,6 @@ public class ProdServicoController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @GetMapping("/pedido/{id}")
-    public Iterable<ProdServico> getProdServicoByPedidoId(@PathVariable(value = "id") UUID id) {
-        List<ProdServico> prodServico = prodServicoRepository.findByItensPedidoId(id);
-        return prodServico;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/filter")

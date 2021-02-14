@@ -8,6 +8,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import senior.com.example.models.Pedido;
 import senior.com.example.models.ProdServico;
@@ -19,8 +20,6 @@ import java.util.UUID;
 
 @Repository
 public interface PedidoRepository extends PagingAndSortingRepository<Pedido, UUID>, QuerydslPredicateExecutor<Pedido>, QuerydslBinderCustomizer<QPedido> {
-    @Query(value="Select * from prodservico where itens_pedido_id = ?1", nativeQuery = true)
-    List<ProdServico> findProdServicoById(UUID id);
 
     @Override
     default public void customize(final QuerydslBindings bindings, final QPedido root) {

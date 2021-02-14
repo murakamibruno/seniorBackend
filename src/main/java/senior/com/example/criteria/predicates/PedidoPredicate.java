@@ -2,7 +2,6 @@ package senior.com.example.criteria.predicates;
 
 import com.querydsl.core.types.dsl.*;
 import senior.com.example.criteria.SearchCriteria;
-import senior.com.example.models.ItensPedido;
 import senior.com.example.models.Pedido;
 
 import java.util.UUID;

@@ -19,8 +19,8 @@ import java.util.UUID;
 @Repository
 public interface ProdServicoRepository extends PagingAndSortingRepository<ProdServico, UUID>, QuerydslPredicateExecutor<ProdServico>, QuerydslBinderCustomizer<QProdServico> {
 
-    //@Query(value="Select * from prodservico p where p.itens_pedido_id = id", nativeQuery = true)
-    List<ProdServico> findByItensPedidoId(@Param("id") UUID id);
+    @Query(value="Select * from prodservico where pedido_id = ?1", nativeQuery = true)
+    List<ProdServico> findByPedidoId(UUID id);
 
     @Override
     default public void customize(final QuerydslBindings bindings, final QProdServico root) {
