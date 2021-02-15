@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public class PedidoNotFound extends RuntimeException{
     public PedidoNotFound(UUID id) {
-        super(String.format("Cidade com id: " + id + " não encontrada"));
+        super(String.format("Pedido com id: " + id + " não encontrada"));
     }
 }
