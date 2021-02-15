@@ -1,6 +1,7 @@
 package senior.com.example.controllers;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import org.apache.commons.collections4.IterableUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
@@ -38,9 +39,7 @@ public class ProdServicoController {
     }
 
     @GetMapping
-    public Iterable<ProdServico> getAllProdServicos() {
-        return prodServicoRepository.findAll(pageSize);
-    }
+    public Iterable<ProdServico> getAllProdServicos() { return prodServicoRepository.findAll(pageSize); }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProdServico> getProdServicoById(@PathVariable(value = "id") UUID id) {

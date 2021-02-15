@@ -54,7 +54,8 @@ public class ProdServico {
         super();
     }
 
-    public ProdServico(String nome, float preco, boolean isProduto, boolean isAtivo, Pedido pedido) {
+    public ProdServico(UUID id, String nome, double preco, boolean isProduto, boolean isAtivo, Pedido pedido) {
+        this.id = id;
         this.nome = nome;
         this.preco = preco;
         this.isProduto = isProduto;
