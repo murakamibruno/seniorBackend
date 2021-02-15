@@ -22,9 +22,11 @@ public class Pedido {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pedido", fetch = FetchType.LAZY)
     private List<ProdServico> prodServicos;
 
-    @NotNull(message = "valor não pode ser nulo")
-    @Positive(message = "Valor deve ser maior que 0")
-    private float precoPedido;
+    private double precoPedido;
+
+    @NotNull
+    @Column(name= "isFechado", nullable = false, columnDefinition = "boolean default false")
+    private boolean isFechado;
 
     @JsonManagedReference
     public List<ProdServico> getProdServicos() {
@@ -39,9 +41,10 @@ public class Pedido {
 
     }
 
-    public Pedido(UUID id, float precoPedido) {
+    public Pedido(UUID id, double precoPedido, boolean isFechado) {
         this.id = id;
         this.precoPedido = precoPedido;
+        this.isFechado = isFechado;
     }
 
     public UUID getId() {
@@ -52,11 +55,20 @@ public class Pedido {
         this.id = id;
     }
 
-    public float getPrecoPedido() {
+    public double getPrecoPedido() {
         return precoPedido;
     }
 
-    public void setPrecoPedido(float precoPedido) {
+    public void setPrecoPedido(double precoPedido) {
         this.precoPedido = precoPedido;
     }
+
+    public boolean isFechado() {
+        return isFechado;
+    }
+
+    public void setFechado(boolean fechado) {
+        isFechado = fechado;
+    }
+
 }

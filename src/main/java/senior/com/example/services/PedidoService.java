@@ -8,19 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class PedidoService {
-    private float sumPrice = 0.0F;
-    private float discountSumValue = 0.0F;
+    private double discountSumValue;
+    private double prodServicosSum;
 
-    public float getSumPrice(Pedido pedido, ProdServicoRepository prodServicoRepository) {
-        UUID uuid = pedido.getId();
-        List<ProdServico> prodServicoList = prodServicoRepository.findByPedidoId(uuid);
-        prodServicoList.forEach(prodServico -> {
-            sumPrice += prodServico.getPreco();
-        });
-        return sumPrice;
-    }
-
-    public float getSumDiscountValue(Pedido pedido, int desconto, ProdServicoRepository prodServicoRepository) {
+    public double getSumDiscountValue(Pedido pedido, int desconto, ProdServicoRepository prodServicoRepository) {
+        discountSumValue = 0;
         UUID uuid = pedido.getId();
         double discount = Double.valueOf(desconto)/100;
         List<ProdServico> prodServicoList = prodServicoRepository.findByPedidoId(uuid);
@@ -31,4 +23,14 @@ public class PedidoService {
         });
         return discountSumValue;
     }
+
+    public double getProdServicosSum(Pedido pedido) {
+        prodServicosSum = 0;
+        pedido.getProdServicos().forEach(prodServico -> {
+            prodServicosSum += prodServico.getPreco();
+        });
+        return prodServicosSum;
+    }
+
+
 }

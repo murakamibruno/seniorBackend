@@ -4,7 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
+import senior.com.example.exception.ProdServicoEmPedidoException;
 import senior.com.example.exception.ProdServicoNotFound;
+import senior.com.example.exception.ProdutoDesativadoException;
 import senior.com.example.models.ProdServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import senior.com.example.repositories.PedidoRepository;
 import senior.com.example.repositories.ProdServicoRepository;
+import senior.com.example.services.PedidoService;
+import senior.com.example.services.ProdServicoService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +29,7 @@ public class ProdServicoController {
     private ProdServicoRepository prodServicoRepository;
     private PedidoRepository pedidoRepository;
 
+    ProdServicoService prodServicoService = new ProdServicoService();
 
     @Autowired
     public ProdServicoController(ProdServicoRepository prodServicoRepository, PedidoRepository pedidoRepository) {
@@ -66,16 +71,26 @@ public class ProdServicoController {
 
     @PostMapping
     public ResponseEntity<ProdServico> saveProdServico(@RequestBody ProdServico prodServico) {
-        ProdServico prodServicoCreated = prodServicoRepository.save(prodServico);
-        return new ResponseEntity<ProdServico>(prodServicoCreated, HttpStatus.CREATED);
+        if (prodServicoService.isProductDeactivated(prodServico)) {
+            throw new ProdutoDesativadoException(prodServico.getNome());
+        } else {
+            ProdServico prodServicoCreated = prodServicoRepository.save(prodServico);
+            prodServicoService.setSumPedido(prodServico, prodServicoRepository, pedidoRepository);
+            return new ResponseEntity<ProdServico>(prodServicoCreated, HttpStatus.CREATED);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProdServico> updateProdServico(@RequestBody ProdServico prodServico, @PathVariable("id") UUID id) {
         if (prodServicoRepository.existsById(id)) {
-            prodServico.setId(id);
-            ProdServico prodServicoUpdated = prodServicoRepository.save(prodServico);
-            return new ResponseEntity<ProdServico>(prodServicoUpdated, HttpStatus.OK);
+            if (prodServicoService.isProductDeactivated(prodServico)) {
+                throw new ProdutoDesativadoException(prodServico.getNome());
+            } else {
+                prodServico.setId(id);
+                ProdServico prodServicoUpdated = prodServicoRepository.save(prodServico);
+                prodServicoService.setSumPedido(prodServico, prodServicoRepository, pedidoRepository);
+                return new ResponseEntity<ProdServico>(prodServicoUpdated, HttpStatus.OK);
+            }
         } else {
             throw new ProdServicoNotFound(id);
         }
@@ -86,9 +101,14 @@ public class ProdServicoController {
         Optional<ProdServico> prodServico = prodServicoRepository.findById(id);
 
         if (prodServico.isPresent()) {
-            ProdServico prodServicoDeleted = prodServico.get();
-            prodServicoRepository.delete(prodServicoDeleted);
-            return new ResponseEntity<ProdServico>(prodServicoDeleted, HttpStatus.OK);
+            if (prodServico.get().getPedido() == null) {
+                ProdServico prodServicoDeleted = prodServico.get();
+                prodServicoRepository.delete(prodServicoDeleted);
+                prodServicoService.setSumPedido(prodServico.get(), prodServicoRepository, pedidoRepository);
+                return new ResponseEntity<ProdServico>(prodServicoDeleted, HttpStatus.OK);
+            } else {
+                throw new ProdServicoEmPedidoException(id);
+            }
         } else {
             throw new ProdServicoNotFound(id);
         }

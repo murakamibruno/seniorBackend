@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import senior.com.example.criteria.predicates.PedidoPredicateBuilder;
 import senior.com.example.criteria.predicates.ProdServicoPredicateBuilder;
+import senior.com.example.exception.PedidoFechadoException;
 import senior.com.example.exception.PedidoNotFound;
 import senior.com.example.models.Pedido;
 import senior.com.example.models.ProdServico;
@@ -89,7 +90,23 @@ public class PedidoController {
     public ResponseEntity<Pedido> updatePedidoDesconto(@PathVariable("id") UUID id, @PathVariable("desconto") int desconto) {
         if (pedidoRepository.existsById(id)) {
             Pedido pedido = pedidoRepository.findById(id).get();
-            pedido.setPrecoPedido(pedido.getPrecoPedido() - pedidoService.getSumDiscountValue(pedido, desconto, prodServicoRepository));
+            if (!pedido.isFechado()) {
+                pedido.setPrecoPedido(pedidoService.getProdServicosSum(pedido) - pedidoService.getSumDiscountValue(pedido, desconto, prodServicoRepository));
+                Pedido pedidoUpdated = pedidoRepository.save(pedido);
+                return new ResponseEntity<Pedido>(pedidoUpdated, HttpStatus.OK);
+            } else {
+                throw new PedidoFechadoException(id);
+            }
+        } else {
+            throw new PedidoNotFound(id);
+        }
+    }
+
+    @PutMapping("/{id}/finalizarPedido")
+    public ResponseEntity<Pedido> fecharPedido(@PathVariable("id") UUID id) {
+        if (pedidoRepository.existsById(id)) {
+            Pedido pedido = pedidoRepository.findById(id).get();
+            pedido.setFechado(true);
             Pedido pedidoUpdated = pedidoRepository.save(pedido);
             return new ResponseEntity<Pedido>(pedidoUpdated, HttpStatus.OK);
         } else {
@@ -99,10 +116,10 @@ public class PedidoController {
 
     @PostMapping
     public ResponseEntity<Pedido> savePedido (@RequestBody Pedido pedido) {
-        pedido.setPrecoPedido(pedidoService.getSumPrice(pedido, prodServicoRepository));
         Pedido pedidoCreated = pedidoRepository.save(pedido);
         return new ResponseEntity<Pedido>(pedidoCreated, HttpStatus.CREATED);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Pedido> deletePedido (@PathVariable("id") UUID id) {

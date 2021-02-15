@@ -27,7 +27,7 @@ public class ProdServico {
 
     @Positive(message = "Valor não pode ser 0 ou negativo")
     @Column(name = "preco", nullable = false)
-    private float preco;
+    private double preco;
 
     @NotNull
     @Column(name = "isProduto", nullable = false)
@@ -78,7 +78,7 @@ public class ProdServico {
         this.nome = nome;
     }
 
-    public float getPreco() {
+    public double getPreco() {
         return preco;
     }
 
